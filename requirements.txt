@@ -1,0 +1,16 @@
+numpy>=2.2,<3
+pandas>=2.2,<3
+scikit-learn>=1.7,<2
+scipy>=1.15,<2
+joblib>=1.4,<2
+streamlit>=1.45,<2
+pytest>=8,<10
+certifi>=2024.2
+gensim==4.4.0
+rapidfuzz>=3.14,<4
+threadpoolctl>=3.5,<4
+torch>=2.6,<3
+transformers>=4.57,<5
+safetensors>=0.4,<1
+onnx>=1.17,<2
+onnxruntime>=1.22,<2

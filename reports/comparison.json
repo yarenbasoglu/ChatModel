@@ -1,0 +1,395 @@
+{
+  "evaluated_at_utc": "2026-11-15T17:39:38.359620+00:00",
+  "dataset": {
+    "seed": 42,
+    "raw_rows": 159571,
+    "removed_empty_rows": 25,
+    "removed_conflicting_rows": 57,
+    "removed_duplicate_rows": 812,
+    "usable_rows": 158677,
+    "label_definition": "Offensive = any of the six Jigsaw labels is 1",
+    "splits": {
+      "train": {
+        "rows": 126941,
+        "clean": 114059,
+        "offensive": 12882,
+        "sha256": "21b04a49226894bfe08d52619e6f06b899e876d6f986aeb70c309b4d1b726666"
+      },
+      "validation": {
+        "rows": 15868,
+        "clean": 14258,
+        "offensive": 1610,
+        "sha256": "2b7e8eb60e85ccf71795db79c66698f62e480191434f66ae1582762a3a76ee59"
+      },
+      "test": {
+        "rows": 15868,
+        "clean": 14258,
+        "offensive": 1610,
+        "sha256": "a6e80f7fd1ad6b4a722b183d3c7e8534c5446bbddb9c82997f9f75a25e650975"
+      }
+    },
+    "source_sha256": "bd4084611bd27c939ba98e5e63bc3e5a2c1a4e99477dcba46c829e4c986c429d"
+  },
+  "hardware": {
+    "os": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "cpu": "Apple M2",
+    "machine": "arm64",
+    "python": "3.13.3"
+  },
+  "models": [
+    {
+      "model": "TF-IDF + Logistic Regression",
+      "status": "trained",
+      "metric_device": "cpu",
+      "test_metrics": {
+        "macro_f1": 0.8865930688174306,
+        "accuracy": 0.9592261154524829,
+        "roc_auc": 0.977009441795344,
+        "confusion_matrix_labels": [
+          "Clean",
+          "Offensive"
+        ],
+        "confusion_matrix": [
+          [
+            13960,
+            298
+          ],
+          [
+            349,
+            1261
+          ]
+        ],
+        "classification_report": {
+          "Clean": {
+            "precision": 0.975609756097561,
+            "recall": 0.979099452938701,
+            "f1-score": 0.9773514894808696,
+            "support": 14258.0
+          },
+          "Offensive": {
+            "precision": 0.8088518280949326,
+            "recall": 0.7832298136645963,
+            "f1-score": 0.7958346481539917,
+            "support": 1610.0
+          },
+          "accuracy": 0.9592261154524829,
+          "macro avg": {
+            "precision": 0.8922307920962468,
+            "recall": 0.8811646333016487,
+            "f1-score": 0.8865930688174306,
+            "support": 15868.0
+          },
+          "weighted avg": {
+            "precision": 0.9586901528656331,
+            "recall": 0.9592261154524829,
+            "f1-score": 0.9589344164700129,
+            "support": 15868.0
+          }
+        }
+      },
+      "threshold": 0.63,
+      "artifact_size_mb": 2.424237,
+      "artifact_sha256": "c97028ff895ddb6451d4b11a5d614fb8b8709594eb2a8c7dc6dee2e19a169ee5",
+      "latency": {
+        "runs": 300,
+        "warmup_runs": 10,
+        "mean_ms": 0.5661209600899989,
+        "median_ms": 0.4618124949047342,
+        "p95_ms": 1.1232413482503034,
+        "max_ms": 3.451416007010266,
+        "budget_ms": 50.0,
+        "p95_within_budget": true,
+        "scope": "Single-message CPU prediction including validation, regex and selected model. Excludes loading/network/UI. BLAS limited to one thread for all models.",
+        "message_characters": {
+          "min": 20,
+          "max": 4062
+        }
+      }
+    },
+    {
+      "model": "Word2Vec + Neural Network",
+      "status": "trained",
+      "metric_device": "cpu",
+      "test_metrics": {
+        "macro_f1": 0.8678129674721777,
+        "accuracy": 0.9528611041088985,
+        "roc_auc": 0.9668812278428847,
+        "confusion_matrix_labels": [
+          "Clean",
+          "Offensive"
+        ],
+        "confusion_matrix": [
+          [
+            13924,
+            334
+          ],
+          [
+            414,
+            1196
+          ]
+        ],
+        "classification_report": {
+          "Clean": {
+            "precision": 0.9711256800111592,
+            "recall": 0.9765745546359939,
+            "f1-score": 0.9738424954539097,
+            "support": 14258.0
+          },
+          "Offensive": {
+            "precision": 0.7816993464052288,
+            "recall": 0.7428571428571429,
+            "f1-score": 0.7617834394904459,
+            "support": 1610.0
+          },
+          "accuracy": 0.9528611041088985,
+          "macro avg": {
+            "precision": 0.8764125132081939,
+            "recall": 0.8597158487465684,
+            "f1-score": 0.8678129674721777,
+            "support": 15868.0
+          },
+          "weighted avg": {
+            "precision": 0.951906093604205,
+            "recall": 0.9528611041088985,
+            "f1-score": 0.9523265463676243,
+            "support": 15868.0
+          }
+        }
+      },
+      "threshold": 0.86,
+      "artifact_size_mb": 20.985973,
+      "artifact_sha256": "c45de2a6fe72b8fb4132020eae971ed79115b6badb150b5889aa9cf9012be474",
+      "latency": {
+        "runs": 300,
+        "warmup_runs": 10,
+        "mean_ms": 0.3218498165369965,
+        "median_ms": 0.24589599343016744,
+        "p95_ms": 0.739310450444464,
+        "max_ms": 2.5581249792594463,
+        "budget_ms": 50.0,
+        "p95_within_budget": true,
+        "scope": "Single-message CPU prediction including validation, regex and selected model. Excludes loading/network/UI. BLAS limited to one thread for all models.",
+        "message_characters": {
+          "min": 20,
+          "max": 4062
+        }
+      }
+    },
+    {
+      "model": "Edit-distance s\u00f6zl\u00fck kural\u0131",
+      "status": "rule_based",
+      "metric_device": "cpu",
+      "test_metrics": {
+        "macro_f1": 0.7877961593562837,
+        "accuracy": 0.9351525081925889,
+        "roc_auc": 0.7429712337587093,
+        "confusion_matrix_labels": [
+          "Clean",
+          "Offensive"
+        ],
+        "confusion_matrix": [
+          [
+            14031,
+            227
+          ],
+          [
+            802,
+            808
+          ]
+        ],
+        "classification_report": {
+          "Clean": {
+            "precision": 0.9459313692442527,
+            "recall": 0.9840791134801515,
+            "f1-score": 0.9646282355367639,
+            "support": 14258.0
+          },
+          "Offensive": {
+            "precision": 0.7806763285024154,
+            "recall": 0.5018633540372671,
+            "f1-score": 0.6109640831758034,
+            "support": 1610.0
+          },
+          "accuracy": 0.9351525081925889,
+          "macro avg": {
+            "precision": 0.863303848873334,
+            "recall": 0.7429712337587093,
+            "f1-score": 0.7877961593562837,
+            "support": 15868.0
+          },
+          "weighted avg": {
+            "precision": 0.9291642520527756,
+            "recall": 0.9351525081925889,
+            "f1-score": 0.9287447413786378,
+            "support": 15868.0
+          }
+        }
+      },
+      "threshold": 0.5,
+      "artifact_size_mb": 0.000503,
+      "artifact_sha256": "97de33aea0d720f4853182841ac4d020b97a75be5306acbf42fcbb47db7e3584",
+      "latency": {
+        "runs": 300,
+        "warmup_runs": 10,
+        "mean_ms": 0.12409972007541607,
+        "median_ms": 0.0780835107434541,
+        "p95_ms": 0.4053877986734733,
+        "max_ms": 1.4250420208554715,
+        "budget_ms": 50.0,
+        "p95_within_budget": true,
+        "scope": "Single-message CPU prediction including validation, regex and selected model. Excludes loading/network/UI. BLAS limited to one thread for all models.",
+        "message_characters": {
+          "min": 20,
+          "max": 4062
+        }
+      }
+    },
+    {
+      "model": "Multilingual BERT",
+      "status": "trained",
+      "metric_device": "mps",
+      "test_metrics": {
+        "macro_f1": 0.8448269193617306,
+        "accuracy": 0.949458028737081,
+        "roc_auc": 0.9535579241119075,
+        "confusion_matrix_labels": [
+          "Clean",
+          "Offensive"
+        ],
+        "confusion_matrix": [
+          [
+            14048,
+            210
+          ],
+          [
+            592,
+            1018
+          ]
+        ],
+        "classification_report": {
+          "Clean": {
+            "precision": 0.9595628415300547,
+            "recall": 0.9852714265675411,
+            "f1-score": 0.9722472143400928,
+            "support": 14258.0
+          },
+          "Offensive": {
+            "precision": 0.8289902280130294,
+            "recall": 0.6322981366459627,
+            "f1-score": 0.7174066243833686,
+            "support": 1610.0
+          },
+          "accuracy": 0.949458028737081,
+          "macro avg": {
+            "precision": 0.894276534771542,
+            "recall": 0.8087847816067519,
+            "f1-score": 0.8448269193617306,
+            "support": 15868.0
+          },
+          "weighted avg": {
+            "precision": 0.9463146749203741,
+            "recall": 0.949458028737081,
+            "f1-score": 0.946390562598832,
+            "support": 15868.0
+          }
+        }
+      },
+      "threshold": 0.61,
+      "artifact_size_mb": 715.362849,
+      "artifact_sha256": "d1445d914cfc3ff7436375639e0eac4dd375341563fac9ae96d454e576c27310",
+      "latency": {
+        "runs": 300,
+        "warmup_runs": 10,
+        "mean_ms": 45.01161664675843,
+        "median_ms": 40.99320850218646,
+        "p95_ms": 62.25261489744298,
+        "max_ms": 84.02995800133795,
+        "budget_ms": 50.0,
+        "p95_within_budget": false,
+        "scope": "Single-message CPU prediction including validation, regex and selected model. Excludes loading/network/UI. BLAS limited to one thread for all models.",
+        "message_characters": {
+          "min": 20,
+          "max": 4062
+        }
+      },
+      "cpu_parity_check": {
+        "samples": 32,
+        "max_probability_difference": 8.791685104370117e-07,
+        "matching_decisions": 32
+      }
+    },
+    {
+      "model": "Multilingual BERT INT8",
+      "status": "quantized",
+      "metric_device": "cpu",
+      "test_metrics": {
+        "macro_f1": 0.8452992454587213,
+        "accuracy": 0.9498361482228385,
+        "roc_auc": 0.9533200060290878,
+        "confusion_matrix_labels": [
+          "Clean",
+          "Offensive"
+        ],
+        "confusion_matrix": [
+          [
+            14058,
+            200
+          ],
+          [
+            596,
+            1014
+          ]
+        ],
+        "classification_report": {
+          "Clean": {
+            "precision": 0.9593285109867613,
+            "recall": 0.985972787207182,
+            "f1-score": 0.9724681793027117,
+            "support": 14258.0
+          },
+          "Offensive": {
+            "precision": 0.8352553542009885,
+            "recall": 0.6298136645962733,
+            "f1-score": 0.7181303116147308,
+            "support": 1610.0
+          },
+          "accuracy": 0.9498361482228385,
+          "macro avg": {
+            "precision": 0.8972919325938749,
+            "recall": 0.8078932259017276,
+            "f1-score": 0.8452992454587213,
+            "support": 15868.0
+          },
+          "weighted avg": {
+            "precision": 0.9467397926589888,
+            "recall": 0.9498361482228385,
+            "f1-score": 0.9466625347994567,
+            "support": 15868.0
+          }
+        }
+      },
+      "threshold": 0.61,
+      "artifact_size_mb": 182.950398,
+      "artifact_sha256": "6572f170f25d498427bb061c75ebd9883937c2e5b40c1f02cf09261c7bc97d70",
+      "latency": {
+        "runs": 300,
+        "warmup_runs": 10,
+        "mean_ms": 14.514752746908925,
+        "median_ms": 14.15337499929592,
+        "p95_ms": 23.344889590225648,
+        "max_ms": 25.387957983184606,
+        "budget_ms": 50.0,
+        "p95_within_budget": true,
+        "scope": "Single-message INT8 ONNX Runtime CPU prediction, including validation, regex and tokenization. Excludes loading/network/UI.",
+        "message_characters": {
+          "min": 20,
+          "max": 4062
+        },
+        "onnxruntime_intra_op_threads": 4
+      }
+    }
+  ],
+  "rule_note": "Rule size measures its JSON lexicon/config only; Python code and shared dependencies excluded. Rule ROC-AUC uses binary decisions, not calibrated probabilities.",
+  "neural_note": "Inference bundle includes all trained Word2Vec vectors, vocabulary, scaler and network weights.",
+  "bert_note": "BERT trained on a 12000-row stratified training subset, last 2 encoder layers fine-tuned. Metric device recorded per row; all latency measurements and UI predictions run on CPU. BERT size includes full FP32 weights and tokenizer."
+}

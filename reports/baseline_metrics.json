@@ -1,0 +1,116 @@
+{
+  "model": "TF-IDF + Logistic Regression",
+  "status": "trained",
+  "metadata": {
+    "trained_at_utc": "2026-11-14T13:09:00.743411+00:00",
+    "sklearn_version": "1.9.1",
+    "training_seconds": 23.422332917005406,
+    "training_rows": 126941,
+    "source_sha256": "bd4084611bd27c939ba98e5e63bc3e5a2c1a4e99477dcba46c829e4c986c429d",
+    "test_sha256": "a6e80f7fd1ad6b4a722b183d3c7e8534c5446bbddb9c82997f9f75a25e650975",
+    "language": "English",
+    "normalization_version": 1
+  },
+  "dataset": {
+    "seed": 42,
+    "raw_rows": 159571,
+    "removed_empty_rows": 25,
+    "removed_conflicting_rows": 57,
+    "removed_duplicate_rows": 812,
+    "usable_rows": 158677,
+    "label_definition": "Offensive = any of the six Jigsaw labels is 1",
+    "splits": {
+      "train": {
+        "rows": 126941,
+        "clean": 114059,
+        "offensive": 12882,
+        "sha256": "21b04a49226894bfe08d52619e6f06b899e876d6f986aeb70c309b4d1b726666"
+      },
+      "validation": {
+        "rows": 15868,
+        "clean": 14258,
+        "offensive": 1610,
+        "sha256": "2b7e8eb60e85ccf71795db79c66698f62e480191434f66ae1582762a3a76ee59"
+      },
+      "test": {
+        "rows": 15868,
+        "clean": 14258,
+        "offensive": 1610,
+        "sha256": "a6e80f7fd1ad6b4a722b183d3c7e8534c5446bbddb9c82997f9f75a25e650975"
+      }
+    },
+    "source_sha256": "bd4084611bd27c939ba98e5e63bc3e5a2c1a4e99477dcba46c829e4c986c429d"
+  },
+  "threshold": 0.63,
+  "validation_macro_f1": 0.8875246071176173,
+  "test_metrics": {
+    "macro_f1": 0.8865930688174306,
+    "accuracy": 0.9592261154524829,
+    "roc_auc": 0.977009441795344,
+    "confusion_matrix_labels": [
+      "Clean",
+      "Offensive"
+    ],
+    "confusion_matrix": [
+      [
+        13960,
+        298
+      ],
+      [
+        349,
+        1261
+      ]
+    ],
+    "classification_report": {
+      "Clean": {
+        "precision": 0.975609756097561,
+        "recall": 0.979099452938701,
+        "f1-score": 0.9773514894808696,
+        "support": 14258.0
+      },
+      "Offensive": {
+        "precision": 0.8088518280949326,
+        "recall": 0.7832298136645963,
+        "f1-score": 0.7958346481539917,
+        "support": 1610.0
+      },
+      "accuracy": 0.9592261154524829,
+      "macro avg": {
+        "precision": 0.8922307920962468,
+        "recall": 0.8811646333016487,
+        "f1-score": 0.8865930688174306,
+        "support": 15868.0
+      },
+      "weighted avg": {
+        "precision": 0.9586901528656331,
+        "recall": 0.9592261154524829,
+        "f1-score": 0.9589344164700129,
+        "support": 15868.0
+      }
+    }
+  },
+  "artifact_size_mb": 2.424237,
+  "artifact_sha256": "c97028ff895ddb6451d4b11a5d614fb8b8709594eb2a8c7dc6dee2e19a169ee5",
+  "latency": {
+    "runs": 300,
+    "warmup_runs": 10,
+    "mean_ms": 0.46092390989845927,
+    "median_ms": 0.37835399416508153,
+    "p95_ms": 0.9115457905863884,
+    "max_ms": 2.827749995049089,
+    "budget_ms": 50.0,
+    "p95_within_budget": true,
+    "scope": "Single-message CPU prediction including validation, regex, TF-IDF and classifier; excludes loading, network and UI rendering.",
+    "message_characters": {
+      "min": 20,
+      "max": 4062
+    }
+  },
+  "hardware": {
+    "os": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "cpu": "Apple M2",
+    "machine": "arm64",
+    "python": "3.13.3"
+  },
+  "probability_note": "Logistic regression scores are not separately calibrated; confidence is not a correctness guarantee."
+}

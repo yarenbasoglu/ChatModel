@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "configured",
+  "max_distance": 1,
+  "minimum_fuzzy_length": 5,
+  "source": "Small hand-authored English insult/profanity lexicon for SWE015; fixed before evaluation. No held-out examples used to select terms.",
+  "terms": [
+    "asshole", "bastard", "bitch", "bullshit", "cunt", "dick", "dickhead",
+    "douchebag", "dumbass", "fuck", "fucked", "fucker", "fucking", "idiot",
+    "imbecile", "moron", "prick", "scumbag", "shit", "shithead", "stupid", "wanker"
+  ]
+}
