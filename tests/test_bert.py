@@ -9,7 +9,7 @@ from transformers import BertConfig, BertForSequenceClassification
 from chatmodel.models.bert import BertModel
 from chatmodel.models.quantized_bert import QuantizedBertModel
 from chatmodel.paths import QUANTIZED_BERT_MANIFEST
-from chatmodel.paths import BERT_MANIFEST, PROCESSED, ROOT
+from chatmodel.paths import BERT_MANIFEST, ROOT
 from scripts.train_bert import freeze_encoder, select_subset
 
 
@@ -47,10 +47,9 @@ def test_incomplete_bert_is_rejected(tmp_path):
 
 
 @pytest.mark.skipif(not BERT_MANIFEST.is_file(), reason="Requires real fine-tuned BERT")
-def test_real_bert_cpu_and_chat():
+def test_real_bert_cpu_and_chat(dataset_manifest):
     model = BertModel.load(BERT_MANIFEST)
-    manifest = json.loads((PROCESSED / "manifest.json").read_text())
-    assert model.metadata["test_sha256"] == manifest["splits"]["test"]["sha256"]
+    assert model.metadata["test_sha256"] == dataset_manifest["splits"]["test"]["sha256"]
     assert next(model.model.parameters()).device.type == "cpu"
     scores = model.batch_scores(["Thank you for helping", "You are a stupid idiot"])
     assert np.isfinite(scores).all()

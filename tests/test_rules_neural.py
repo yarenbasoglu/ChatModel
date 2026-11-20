@@ -1,12 +1,10 @@
-import json
-
 import numpy as np
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from chatmodel.models.neural import NeuralModel, average_embeddings
 from chatmodel.models.rules import EditDistanceModel
-from chatmodel.paths import NEURAL_ARTIFACT, PROCESSED, ROOT, RULE_CONFIG
+from chatmodel.paths import NEURAL_ARTIFACT, ROOT, RULE_CONFIG
 from scripts.fix_gensim_blas import verify_backend
 
 
@@ -67,14 +65,13 @@ def test_rule_switch_and_mixed_history():
 
 
 @pytest.mark.skipif(not NEURAL_ARTIFACT.is_file(), reason="Requires genuinely trained neural weights")
-def test_real_neural_and_ui():
+def test_real_neural_and_ui(dataset_manifest):
     model = NeuralModel.load(NEURAL_ARTIFACT)
     prediction = model.predict("Thank you for helping!")
     assert 0 <= prediction.offensive_probability <= 1
     assert prediction.latency_ms > 0
-    manifest = json.loads((PROCESSED / "manifest.json").read_text(encoding="utf-8"))
-    assert model.metadata["training_rows"] == manifest["splits"]["train"]["rows"]
-    assert model.metadata["test_sha256"] == manifest["splits"]["test"]["sha256"]
+    assert model.metadata["training_rows"] == dataset_manifest["splits"]["train"]["rows"]
+    assert model.metadata["test_sha256"] == dataset_manifest["splits"]["test"]["sha256"]
     with pytest.raises(ValueError):
         model.predict("!!!")
     assert model.classifier.hidden_layer_sizes == (128, 32)

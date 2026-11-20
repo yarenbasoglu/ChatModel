@@ -132,10 +132,27 @@ python -m pip install -r requirements.txt
 ```
 
 Bu Mac'teki ortam zaten `.venv` içindedir. Yeniden oluşturmak gerekmez.
-Tam doğrulanan paket sürümleri `requirements-lock.txt` dosyasına kaydedilir;
-aynı Python sürümünde tekrar kurulum için `requirements.txt` yerine onu kullanın.
+Tam doğrulanan paket sürümleri `requirements-lock.txt` dosyasındadır. Hazır model
+dosyalarını kullanmak için aynı Python sürümünde kilitli bağımlılıkları kurun.
 
-Veri ve model ilk kez oluşturulacaksa:
+### Eğitilmiş modellerle çalıştırma
+
+Arşivleri [GitHub Releases](https://github.com/yarenbasoglu/ChatModel/releases/tag/v1.0.0)
+sayfasından indirip proje kök dizinine çıkarın. `chatmodel-int8.tar` varsayılan
+INT8 BERT'i, `chatmodel-extra-models.tar` TF-IDF, sinir ağı ve FP32 BERT'i içerir.
+Sadece varsayılan modeli denemek için ilk arşiv yeterli.
+
+```bash
+.venv/bin/python -m pip install -r requirements-lock.txt
+tar -xf chatmodel-int8.tar
+# Diğer eğitilmiş modeller için: tar -xf chatmodel-extra-models.tar
+.venv/bin/python -m streamlit run app.py
+```
+
+İndirmeleri sürümdeki `SHA256SUMS.txt` ile doğrulayabilirsiniz.
+Bu adımlarla uygulamayı model eğitimine veya veri setine gerek kalmadan açabilirsiniz.
+
+Veri ve modelleri yeniden üretmek için:
 
 ```bash
 python -m scripts.download_data
