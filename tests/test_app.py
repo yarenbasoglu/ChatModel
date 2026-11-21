@@ -37,3 +37,20 @@ def test_missing_model_ui(monkeypatch, tmp_path):
     assert not app.exception
     assert "Eğitilmiş model bulunamadı" in app.error[0].value
     assert len(app.chat_input) == 0
+
+
+def test_sidebar_retains_all_session_latencies():
+    app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+    app.selectbox[0].select("Edit-distance sözlük kuralı").run()
+    app.chat_input[0].set_value("Thanks for helping me!").run()
+    first = app.session_state["history"][0]
+    app.session_state["history"] = [first.copy() for _ in range(50)]
+
+    app.chat_input[0].set_value("See you next round!").run()
+
+    assert not app.exception
+    assert len(app.session_state["history"]) == 51
+    latency_table = app.sidebar.dataframe[0].value
+    assert latency_table["Mesaj"].tolist() == list(range(1, 52))
+    assert latency_table["ms"].iloc[0] == round(first["latency_ms"], 2)
+    assert app.session_state["history"][0]["display_text"] == "Thanks for helping me!"

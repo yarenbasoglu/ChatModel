@@ -111,7 +111,7 @@ elif REPORT.is_file() and kind == "baseline":
         st.warning("Test raporu okunamadı; rapor dosyasını kontrol edin.")
 
 st.subheader("Sohbeti deneyin")
-st.caption("Mesajı gönderdiğiniz anda analiz edilir. Offensive mesajlar tamamen maskelenir. Son 50 mesaj yalnızca bu oturumda tutulur.")
+st.caption("Mesajı gönderdiğiniz anda analiz edilir. Offensive mesajlar tamamen maskelenir. Mesajlar ve gecikmeleri bu oturum boyunca tutulur.")
 if kind != "rules":
     st.caption("Güven, seçilen sınıfın model olasılığıdır; ayrıca kalibre edilmedi ve doğruluk garantisi değildir.")
 
@@ -132,7 +132,7 @@ if message is not None:
         item = asdict(prediction)
         item.pop("normalized_text")
         item["display_text"] = "[Saldırgan mesaj maskelendi]" if prediction.label == "Offensive" else message
-        st.session_state.history = (st.session_state.history + [item])[-50:]
+        st.session_state.history.append(item)
         st.rerun()
     except ValueError as error:
         st.warning(str(error))

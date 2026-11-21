@@ -161,7 +161,27 @@ mkdir -p artifacts/downloads
 ```
 
 Bu adımlarla uygulamayı model eğitimine veya veri setine gerek kalmadan açabilirsiniz.
-Diğer eğitilmiş modeller için aşağıdaki yeniden üretme adımlarını kullanın.
+### Diğer hazır modelleri ekleme
+
+TF-IDF, Word2Vec + sinir ağı ve FP32 BERT arşivi aynı sürümde 45 parçadır.
+Proje kök dizininde bu adımları çalıştırıp Streamlit sayfasını yenileyin.
+
+```bash
+mkdir -p artifacts/downloads
+(
+  set -e
+  cd artifacts/downloads
+  release_url=https://github.com/yarenbasoglu/ChatModel/releases/download/v1.0.0
+  for suffix in a{a..z} b{a..s}; do
+    part="chatmodel-extra-models.tar.part-$suffix"
+    curl -fLsS --retry 3 "$release_url/$part" -o "$part"
+  done
+  cat chatmodel-extra-models.tar.part-a[a-z] chatmodel-extra-models.tar.part-b[a-s] > chatmodel-extra-models.tar
+  printf '%s  %s\n' '699494a4fad24d8c99d83b4de866a23c34471da8b0a5d660e5ecee8571699b6a' 'chatmodel-extra-models.tar' |
+    shasum -a 256 -c -
+  tar -xf chatmodel-extra-models.tar -C ../..
+)
+```
 
 Veri ve modelleri yeniden üretmek için:
 
@@ -317,8 +337,9 @@ Bu İngilizce Wikipedia veri kümesi oyun sohbetini birebir temsil etmez; bağla
 alay, alıntı, lehçe ve Türkçe girdiler hata üretebilir. Regex'in Türkçe harfleri
 işlemesi Türkçe model eğitildiği anlamına gelmez. Sonuçlar otomatik ceza vermek
 için tek başına kullanılmamalıdır. joblib yalnızca bu projede üretilmiş güvenilir
-dosyalardan yüklenmelidir. Sohbet metinleri diske yazılmaz; son 50 mesaj oturum
-belleğinde tutulur ve saldırgan mesajın ham/normalize metni geçmişe kaydedilmez.
+dosyalardan yüklenmelidir. Sohbet ve gecikme geçmişi oturum boyunca bellekte
+tutulur. Sohbet temizlendiğinde geçmiş silinir. Saldırgan mesajlar geçmişte
+maskeli olarak gösterilir.
 
 AI kullanım kaydı: Bu başlangıç sürümünün kodu, testleri ve dokümantasyonu
 OpenAI Codex yardımıyla oluşturuldu. Öğrenci kodu incelemeli, deneyleri
