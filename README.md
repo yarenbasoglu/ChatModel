@@ -137,20 +137,31 @@ dosyalarını kullanmak için aynı Python sürümünde kilitli bağımlılıkla
 
 ### Eğitilmiş modellerle çalıştırma
 
-Arşivleri [GitHub Releases](https://github.com/yarenbasoglu/ChatModel/releases/tag/v1.0.0)
-sayfasından indirip proje kök dizinine çıkarın. `chatmodel-int8.tar` varsayılan
-INT8 BERT'i, `chatmodel-extra-models.tar` TF-IDF, sinir ağı ve FP32 BERT'i içerir.
-Sadece varsayılan modeli denemek için ilk arşiv yeterli.
+Varsayılan INT8 BERT ağırlıkları [GitHub Releases](https://github.com/yarenbasoglu/ChatModel/releases/tag/v1.0.0)
+sayfasında 11 parça halinde bulunur. Proje kök dizininde aşağıdaki komutlarla
+parçaları indirip birleştirin ve arşivi doğrulayın.
 
 ```bash
 .venv/bin/python -m pip install -r requirements-lock.txt
-tar -xf chatmodel-int8.tar
-# Diğer eğitilmiş modeller için: tar -xf chatmodel-extra-models.tar
+mkdir -p artifacts/downloads
+(
+  set -e
+  cd artifacts/downloads
+  release_url=https://github.com/yarenbasoglu/ChatModel/releases/download/v1.0.0
+  for suffix in aa ab ac ad ae af ag ah ai aj ak; do
+    part="chatmodel-int8.tar.part-$suffix"
+    curl -fLsS --retry 3 "$release_url/$part" -o "$part"
+  done
+  cat chatmodel-int8.tar.part-a[a-k] > chatmodel-int8.tar
+  printf '%s  %s\n' '5638abff0d406c0b232e54b0c61b8a57efb2cf02a55c2b7386370b659917b541' 'chatmodel-int8.tar' |
+    shasum -a 256 -c -
+  tar -xf chatmodel-int8.tar -C ../..
+)
 .venv/bin/python -m streamlit run app.py
 ```
 
-İndirmeleri sürümdeki `SHA256SUMS.txt` ile doğrulayabilirsiniz.
 Bu adımlarla uygulamayı model eğitimine veya veri setine gerek kalmadan açabilirsiniz.
+Diğer eğitilmiş modeller için aşağıdaki yeniden üretme adımlarını kullanın.
 
 Veri ve modelleri yeniden üretmek için:
 
