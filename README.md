@@ -1,6 +1,6 @@
 # ChatModel — SWE015 Real-Time Chat Moderation
 
-## INT8 BERT sonuçları — 15 Kasım 2026
+## Ortak test sonuçları — 22 Kasım 2026
 
 Uygulama varsayılan olarak ONNX Runtime üzerinde Multilingual BERT INT8
 kullanır. Aşağıdaki Macro-F1 değerleri aynı 15.868 test mesajına aittir.
@@ -8,11 +8,11 @@ Apple M2 CPU gecikmesi her satırda 300 tek mesaj tahminiyle ölçüldü.
 
 | Model | Macro-F1 | Ortalama ms | p95 ms | Boyut MB |
 | --- | ---: | ---: | ---: | ---: |
-| TF-IDF + Logistic Regression | 0,8866 | 0,57 | 1,12 | 2,42 |
-| Word2Vec + Neural Network | 0,8678 | 0,32 | 0,74 | 20,99 |
-| Multilingual BERT FP32 | 0,8448 | 45,01 | 62,25 | 715,36 |
-| Multilingual BERT INT8 | 0,8453 | 14,51 | 23,34 | 182,95 |
-| Edit-distance sözlük kuralı | 0,7878 | 0,12 | 0,41 | 0,0005 |
+| TF-IDF + Logistic Regression | 0,8866 | 0,44 | 0,87 | 2,42 |
+| Word2Vec + Neural Network | 0,8678 | 0,30 | 0,69 | 20,99 |
+| Multilingual BERT FP32 | 0,8448 | 40,90 | 63,17 | 715,36 |
+| Multilingual BERT INT8 | 0,8453 | 14,53 | 23,35 | 182,95 |
+| Edit-distance sözlük kuralı | 0,7878 | 0,12 | 0,36 | 0,0005 |
 
 INT8, 50 ms p95 hedefini karşıladı. FP32 ve INT8 gecikmeleri sırasıyla
 PyTorch (tek iş parçacığı) ve ONNX Runtime (dört iş parçacığı) ile ölçüldü.

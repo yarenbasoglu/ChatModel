@@ -98,8 +98,8 @@ if COMPARISON_REPORT.is_file():
             st.dataframe([
                 {"Model": display_model_name(entry["model"]),
                  "Macro-F1": round(entry["test_metrics"]["macro_f1"], 4),
-                 "Mean latency (ms)": round(entry["latency"]["mean_ms"], 3),
-                 "p95 latency (ms)": round(entry["latency"]["p95_ms"], 3),
+                 "Mean latency (ms)": round(entry["latency"]["mean_ms"], 2),
+                 "p95 latency (ms)": round(entry["latency"]["p95_ms"], 2),
                  "File size (MB)": round(entry["artifact_size_mb"], 4)}
                 for entry in report["models"]
             ], hide_index=True, use_container_width=True)
