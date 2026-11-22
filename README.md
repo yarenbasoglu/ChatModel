@@ -137,9 +137,26 @@ dosyalarını kullanmak için aynı Python sürümünde kilitli bağımlılıkla
 
 ### Eğitilmiş modellerle çalıştırma
 
-Varsayılan INT8 BERT ağırlıkları [GitHub Releases](https://github.com/yarenbasoglu/ChatModel/releases/tag/v1.0.0)
-sayfasında 11 parça halinde bulunur. Proje kök dizininde aşağıdaki komutlarla
-parçaları indirip birleştirin ve arşivi doğrulayın.
+[Google Drive model klasöründen](https://drive.google.com/drive/folders/1W2Kf67uLiYBwOc7L8obSmC98yNg5G0GH)
+`chatmodel-int8.tar` ve `SHA256SUMS.txt` dosyalarını indirip proje kök dizinine
+koyun. Varsayılan INT8 BERT ile başlamak için aşağıdaki adımlar yeterli.
+
+```bash
+.venv/bin/python -m pip install -r requirements-lock.txt
+grep '  chatmodel-int8.tar$' SHA256SUMS.txt | shasum -a 256 -c - && tar -xf chatmodel-int8.tar
+.venv/bin/python -m streamlit run app.py
+```
+
+Diğer üç eğitilmiş modeli de kullanmak için aynı klasörden
+`chatmodel-extra-models.tar` dosyasını indirin. Proje kökünde
+`grep '  chatmodel-extra-models.tar$' SHA256SUMS.txt | shasum -a 256 -c - && tar -xf chatmodel-extra-models.tar`
+komutunu çalıştırın ve Streamlit sayfasını yenileyin.
+
+### GitHub Releases üzerinden alternatif indirme
+
+Varsayılan INT8 BERT arşivi [GitHub Releases](https://github.com/yarenbasoglu/ChatModel/releases/tag/v1.0.0)
+sayfasında da 11 parça halinde bulunur. Proje kök dizininde aşağıdaki komutlarla
+parçaları indirip birleştirebilirsiniz.
 
 ```bash
 .venv/bin/python -m pip install -r requirements-lock.txt
@@ -161,7 +178,7 @@ mkdir -p artifacts/downloads
 ```
 
 Bu adımlarla uygulamayı model eğitimine veya veri setine gerek kalmadan açabilirsiniz.
-### Diğer hazır modelleri ekleme
+### Diğer hazır modelleri GitHub Releases üzerinden ekleme
 
 TF-IDF, Word2Vec + sinir ağı ve FP32 BERT arşivi aynı sürümde 45 parçadır.
 Proje kök dizininde bu adımları çalıştırıp Streamlit sayfasını yenileyin.
