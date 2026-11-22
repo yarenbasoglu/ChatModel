@@ -24,17 +24,17 @@ class NeuralModel:
 
     def __init__(self, bundle: dict):
         if bundle.get("schema_version") != 1 or bundle.get("status") != "trained":
-            raise ValueError("Geçersiz veya eğitilmemiş sinir ağı dosyası.")
+            raise ValueError("Invalid or untrained neural network file.")
         self.metadata = bundle["metadata"]
         if self.metadata["sklearn_version"] != sklearn.__version__:
-            raise ValueError("Sinir ağı scikit-learn sürümü uyuşmuyor. requirements-lock.txt kullanın.")
+            raise ValueError("The neural network requires a different scikit-learn version. Install the dependencies in requirements-lock.txt.")
         self.vocabulary = bundle["vocabulary"]
         self.vectors = bundle["vectors"]
         self.scaler = bundle["scaler"]
         self.classifier = bundle["classifier"]
         self.threshold = bundle["threshold"]
         if not 0 < self.threshold < 1:
-            raise ValueError("Geçersiz sinir ağı karar eşiği.")
+            raise ValueError("Invalid neural network decision threshold.")
 
     @classmethod
     def load(cls, filename: Path):

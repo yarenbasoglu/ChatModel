@@ -15,14 +15,14 @@ class EditDistanceModel:
 
     def __init__(self, configuration: dict):
         if configuration.get("schema_version") != 1 or configuration.get("status") != "configured":
-            raise ValueError("Geçersiz sözlük yapılandırması.")
+            raise ValueError("Invalid lexicon configuration.")
         self.terms = frozenset(configuration["terms"])
         if not self.terms or any(normalize_text(term) != term or " " in term for term in self.terms):
-            raise ValueError("Sözlük normalize edilmiş tek sözcükler içermeli.")
+            raise ValueError("The lexicon must contain normalized single words.")
         self.max_distance = configuration["max_distance"]
         self.minimum_fuzzy_length = configuration["minimum_fuzzy_length"]
         if self.max_distance != 1 or self.minimum_fuzzy_length < 5:
-            raise ValueError("Bu sürüm en az 5 harfte en fazla 1 düzenlemeyi destekler.")
+            raise ValueError("This version supports up to one edit for words with at least five letters.")
         self.by_length = {}
         for term in sorted(self.terms):
             self.by_length.setdefault(len(term), []).append(term)

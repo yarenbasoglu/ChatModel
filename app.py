@@ -13,6 +13,7 @@ from chatmodel.paths import QUANTIZED_BERT_MANIFEST
 from chatmodel.paths import ARTIFACT, BERT_MANIFEST, COMPARISON_REPORT, MAX_MESSAGE_LENGTH, NEURAL_ARTIFACT, REPORT, RULE_CONFIG
 
 st.set_page_config(page_title="ChatModel · Moderation", page_icon="💬", layout="wide")
+st.html(Path(__file__).parent / ".streamlit" / "chatmodel.css")
 
 
 @st.cache_resource
@@ -22,9 +23,18 @@ def load_model(kind: str, filename: str, modified_ns: int):
     return model_classes[kind].load(Path(filename))
 
 
-st.title("ChatModel")
-st.caption("SWE015 · Real-Time Chat Moderation")
-st.info("İngilizce mesajlarla deneyin. Öğrenen modeller Jigsaw yorumlarıyla eğitildi; Türkçe doğruluğu değerlendirilmedi.")
+RULE_LABEL = "Edit-Distance Lexicon Rule"
+MASKED_MESSAGE = "[Offensive message masked]"
+
+
+def display_model_name(name: str) -> str:
+    return RULE_LABEL if name == EditDistanceModel.name else name
+
+
+with st.container(key="chatmodel_intro"):
+    st.title("ChatModel", anchor=False)
+    st.caption("SWE015 · Real-Time Chat Moderation")
+st.info("Try an English message. The models were trained on English comments from Jigsaw.")
 
 available = {}
 for name, kind, filename in [
@@ -38,19 +48,19 @@ for name, kind, filename in [
         available[name] = (kind, filename)
 
 if not available:
-    st.error("Eğitilmiş model bulunamadı. Veri indirildikten sonra hazırlama ve eğitim adımlarını çalıştırın.")
+    st.error("No trained model found. Download the released models or prepare the dataset and train a model.")
     st.code("python -m scripts.download_data\npython -m scripts.prepare_data\npython -m scripts.train_baseline")
     st.stop()
 
 with st.sidebar:
-    st.header("Model ve ölçümler")
-    selected = st.selectbox("Çalışan model", list(available))
+    st.header("Models and Measurements")
+    selected = st.selectbox("Active Model", list(available), format_func=display_model_name)
 
 kind, filename = available[selected]
 try:
     model = load_model(kind, str(filename), filename.stat().st_mtime_ns)
 except Exception as error:
-    st.error(f"Model yüklenemedi: {error}")
+    st.error(f"Could not load the model. {error}")
     st.stop()
 
 if "history" not in st.session_state:
@@ -58,80 +68,86 @@ if "history" not in st.session_state:
 
 with st.sidebar:
     if kind == "rules":
-        st.caption(f"{len(model.terms)} sözcüklük sözlük · Levenshtein uzaklığı ≤ 1")
-        st.caption("Kısa sözcüklerde tam eşleşme aranır. Eşleşme skoru sözcük benzerliğidir; sınıf olasılığı hesaplanmaz.")
+        st.caption(f"{len(model.terms)} words in the lexicon · Levenshtein distance ≤ 1")
+        st.caption("Short words require an exact match. The score measures word similarity.")
     else:
-        st.caption(f"Eğitim örneği: {model.metadata['training_rows']:,}")
-        st.caption(f"Karar eşiği: {model.threshold:.2f}")
-    st.caption("CPU hedefi: 50 ms")
+        st.caption(f"Training examples: {model.metadata['training_rows']:,}")
+        st.caption(f"Decision threshold: {model.threshold:.2f}")
+    st.caption("CPU target: 50 ms")
     if kind in ("bert", "bert_int8"):
-        st.caption(f"En fazla {model.max_length} WordPiece token işlenir. Uzun mesajların sonu kesilebilir.")
+        st.caption(f"The model processes up to {model.max_length} WordPiece tokens. Longer messages may be truncated.")
     st.divider()
-    if st.button("Sohbeti temizle", use_container_width=True):
+    if st.button("Clear Chat", use_container_width=True):
         st.session_state.history = []
         st.rerun()
-    st.subheader("Mesaj gecikmeleri")
+    st.subheader("Message Latencies")
     if st.session_state.history:
         st.dataframe([
-            {"Mesaj": index + 1, "Model": item["model_name"], "Sonuç": item["label"], "ms": round(item["latency_ms"], 2)}
+            {"Message": index + 1, "Model": display_model_name(item["model_name"]), "Result": item["label"],
+             "Latency (ms)": round(item["latency_ms"], 2)}
             for index, item in enumerate(st.session_state.history)
         ], hide_index=True, use_container_width=True)
     else:
-        st.caption("İlk mesajınızdan sonra burada görünür.")
-    st.caption("Ölçüm: regex + seçili yöntem. Model yükleme ve ekran çizimi dahil değildir.")
+        st.caption("Send a message to see its latency here.")
+    st.caption("Timing covers text normalization and prediction. Model loading and screen rendering are excluded.")
 
 if COMPARISON_REPORT.is_file():
     try:
         report = json.loads(COMPARISON_REPORT.read_text(encoding="utf-8"))
-        with st.expander("Aynı test kümesindeki model karşılaştırması"):
+        with st.expander("Model Comparison on the Same Test Set"):
             st.dataframe([
-                {"Model": entry["model"], "Macro-F1": round(entry["test_metrics"]["macro_f1"], 4),
-                 "Ortalama ms": round(entry["latency"]["mean_ms"], 3),
-                 "p95 ms": round(entry["latency"]["p95_ms"], 3),
-                 "Dosya MB": round(entry["artifact_size_mb"], 4)}
+                {"Model": display_model_name(entry["model"]),
+                 "Macro-F1": round(entry["test_metrics"]["macro_f1"], 4),
+                 "Mean latency (ms)": round(entry["latency"]["mean_ms"], 3),
+                 "p95 latency (ms)": round(entry["latency"]["p95_ms"], 3),
+                 "File size (MB)": round(entry["artifact_size_mb"], 4)}
                 for entry in report["models"]
             ], hide_index=True, use_container_width=True)
-            st.caption(f"{report['dataset']['splits']['test']['rows']:,} ortak test örneği · Model başına 300 ölçüm · {report['hardware']['cpu']}")
-            st.caption("Sözlük boyutu yalnızca kural yapılandırmasıdır. Sinir ağı boyutu Word2Vec vektörlerini de içerir. Kaydedilmiş karşılaştırma raporu gösterilir.")
+            st.caption(
+                f"{report['dataset']['splits']['test']['rows']:,} shared test messages. "
+                f"300 single-message CPU predictions per model on {report['hardware']['cpu']}."
+            )
+            st.caption("The table shows saved evaluation results. Lexicon size covers the rule configuration file. Neural network size includes Word2Vec vectors.")
             if any(entry["model"] == BertModel.name for entry in report["models"]):
-                st.caption("BERT bu deneyde 12.000 eğitim mesajıyla, son iki katmanı ince ayarlanarak eğitildi. Tüm gecikmeler CPU'da ölçülür; toplu test skorunun cihazı raporda kayıtlıdır.")
+                st.caption("BERT's final two encoder layers were fine-tuned on 12,000 training messages. All latency measurements used the CPU. The report lists the device used to compute each test score.")
     except (OSError, ValueError, KeyError):
-        st.warning("Karşılaştırma raporu okunamadı. python -m scripts.evaluate_models çalıştırın.")
+        st.warning("Could not read the comparison report. Run python -m scripts.evaluate_models.")
 elif REPORT.is_file() and kind == "baseline":
     try:
         report = json.loads(REPORT.read_text(encoding="utf-8"))
-        with st.expander("Gerçek test sonuçları ve veri kaynağı"):
+        with st.expander("Test Results and Data Source"):
             first, second, third = st.columns(3)
             first.metric("Test Macro-F1", f"{report['test_metrics']['macro_f1']:.4f}")
-            second.metric("Ortalama CPU gecikmesi", f"{report['latency']['mean_ms']:.2f} ms")
-            third.metric("Model dosyası", f"{report['artifact_size_mb']:.2f} MB")
-            st.caption(f"{report['dataset']['splits']['test']['rows']:,} ayrılmış test örneği · {report['latency']['runs']} gecikme ölçümü · {report['hardware']['cpu']}")
-            st.markdown("Veri: [Jigsaw / Kaggle](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data), [açık topluluk kopyası](https://huggingface.co/datasets/tasksource/jigsaw_toxicity).")
+            second.metric("Mean CPU Latency", f"{report['latency']['mean_ms']:.2f} ms")
+            third.metric("Model File Size", f"{report['artifact_size_mb']:.2f} MB")
+            st.caption(f"{report['dataset']['splits']['test']['rows']:,} held-out test messages · {report['latency']['runs']} latency measurements · {report['hardware']['cpu']}")
+            st.markdown("Data: [Jigsaw / Kaggle](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data), [public dataset mirror](https://huggingface.co/datasets/tasksource/jigsaw_toxicity).")
     except (OSError, ValueError, KeyError):
-        st.warning("Test raporu okunamadı; rapor dosyasını kontrol edin.")
+        st.warning("Could not read the test report.")
 
-st.subheader("Sohbeti deneyin")
-st.caption("Mesajı gönderdiğiniz anda analiz edilir. Offensive mesajlar tamamen maskelenir. Mesajlar ve gecikmeleri bu oturum boyunca tutulur.")
+st.subheader("Try the Chat")
+st.caption("Messages are analyzed as you send them. Offensive messages are masked. Chat history and latency records are kept for this session.")
 if kind != "rules":
-    st.caption("Güven, seçilen sınıfın model olasılığıdır; ayrıca kalibre edilmedi ve doğruluk garantisi değildir.")
+    st.caption("Confidence is the model's estimated probability for the predicted label.")
 
 for item in st.session_state.history:
     with st.chat_message("user"):
-        st.text(item["display_text"])
+        st.text(MASKED_MESSAGE if item["label"] == "Offensive" else item["display_text"])
     with st.chat_message("assistant"):
-        st.markdown(f"**{item['label']}** · {item['model_name']}")
+        badge_color = "red" if item["label"] == "Offensive" else "green"
+        st.markdown(f":{badge_color}-badge[{item['label']}] · {display_model_name(item['model_name'])}")
         if item.get("score_kind") == "lexicon_similarity":
-            st.caption(f"Sözlük eşleşmesi: %{item['confidence'] * 100:.1f} · Gecikme: {item['latency_ms']:.2f} ms")
+            st.caption(f"Lexicon match: {item['confidence'] * 100:.1f}% · Latency: {item['latency_ms']:.2f} ms")
         else:
-            st.caption(f"Güven: %{item['confidence'] * 100:.1f} · Offensive olasılığı: %{item['offensive_probability'] * 100:.1f} · Gecikme: {item['latency_ms']:.2f} ms")
+            st.caption(f"Confidence: {item['confidence'] * 100:.1f}% · Offensive probability: {item['offensive_probability'] * 100:.1f}% · Latency: {item['latency_ms']:.2f} ms")
 
-message = st.chat_input("İngilizce bir mesaj yazın…", max_chars=MAX_MESSAGE_LENGTH)
+message = st.chat_input("Type a message in English…", max_chars=MAX_MESSAGE_LENGTH)
 if message is not None:
     try:
         prediction = model.predict(message)
         item = asdict(prediction)
         item.pop("normalized_text")
-        item["display_text"] = "[Saldırgan mesaj maskelendi]" if prediction.label == "Offensive" else message
+        item["display_text"] = MASKED_MESSAGE if prediction.label == "Offensive" else message
         st.session_state.history.append(item)
         st.rerun()
     except ValueError as error:

@@ -18,7 +18,7 @@ def test_real_model_chat_masking_and_history():
     app.chat_input[0].set_value("You are a stupid idiot and a fucking moron.").run()
     assert not app.exception
     assert app.session_state["history"][-1]["label"] == "Offensive"
-    assert app.session_state["history"][-1]["display_text"] == "[Saldırgan mesaj maskelendi]"
+    assert app.session_state["history"][-1]["display_text"] == "[Offensive message masked]"
     assert all("fucking" not in element.value for element in app.text)
     assert len(app.dataframe) >= 1
     app.button[0].click().run()
@@ -35,7 +35,7 @@ def test_missing_model_ui(monkeypatch, tmp_path):
     monkeypatch.setattr(chatmodel.paths, "QUANTIZED_BERT_MANIFEST", tmp_path / "missing_int8.json")
     app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
     assert not app.exception
-    assert "Eğitilmiş model bulunamadı" in app.error[0].value
+    assert "No trained model found" in app.error[0].value
     assert len(app.chat_input) == 0
 
 
@@ -51,6 +51,6 @@ def test_sidebar_retains_all_session_latencies():
     assert not app.exception
     assert len(app.session_state["history"]) == 51
     latency_table = app.sidebar.dataframe[0].value
-    assert latency_table["Mesaj"].tolist() == list(range(1, 52))
-    assert latency_table["ms"].iloc[0] == round(first["latency_ms"], 2)
+    assert latency_table["Message"].tolist() == list(range(1, 52))
+    assert latency_table["Latency (ms)"].iloc[0] == round(first["latency_ms"], 2)
     assert app.session_state["history"][0]["display_text"] == "Thanks for helping me!"

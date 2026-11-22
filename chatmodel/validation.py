@@ -6,10 +6,10 @@ from chatmodel.preprocessing import normalize_text
 
 def validate_message(text: str) -> str:
     if not isinstance(text, str) or not text.strip():
-        raise ValueError("Lütfen boş olmayan bir mesaj yazın.")
+        raise ValueError("Enter a message.")
     if len(text) > MAX_MESSAGE_LENGTH:
-        raise ValueError(f"Mesaj en fazla {MAX_MESSAGE_LENGTH} karakter olabilir.")
+        raise ValueError(f"Messages can contain up to {MAX_MESSAGE_LENGTH} characters.")
     normalized = normalize_text(text)
     if not re.search(r"[a-z]", normalized):
-        raise ValueError("Analiz için İngilizce sözcük içeren bir mesaj yazın.")
+        raise ValueError("Enter a message containing at least one English word.")
     return normalized

@@ -19,7 +19,7 @@ class QuantizedBertModel:
 
         manifest = json.loads((directory / "conversion.json").read_text(encoding="utf-8"))
         if manifest["format"] != "onnx-dynamic-int8":
-            raise ValueError("Geçersiz INT8 model biçimi.")
+            raise ValueError("Invalid INT8 model format.")
         self.metadata = manifest["metadata"]
         self.max_length = self.metadata["max_length"]
         self.threshold = manifest["threshold"]

@@ -55,11 +55,11 @@ class BertModel:
 
         manifest = json.loads((directory / "training.json").read_text(encoding="utf-8"))
         if manifest.get("schema_version") != 1 or manifest.get("status") != "trained":
-            raise ValueError("BERT eğitimi tamamlanmamış veya model dosyası geçersiz.")
+            raise ValueError("BERT training is incomplete or the model file is invalid.")
         self.metadata = manifest["metadata"]
         self.threshold = manifest["threshold"]
         if not 0 < self.threshold < 1:
-            raise ValueError("Geçersiz BERT karar eşiği.")
+            raise ValueError("Invalid BERT decision threshold.")
         self.max_length = self.metadata["max_length"]
         torch.set_num_threads(1)
         self.tokenizer = AutoTokenizer.from_pretrained(directory, local_files_only=True, fix_mistral_regex=False)

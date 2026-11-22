@@ -39,12 +39,12 @@ class BaselineModel:
     @classmethod
     def load(cls, filename: Path):
         if not filename.is_file():
-            raise FileNotFoundError("Eğitilmiş model bulunamadı. Önce python -m scripts.train_baseline çalıştırın.")
+            raise FileNotFoundError("Trained model not found. Run python -m scripts.train_baseline first.")
         bundle = joblib.load(filename)
         if bundle.get("schema_version") != 1 or bundle.get("status") != "trained":
-            raise ValueError("Geçersiz veya eğitilmemiş model dosyası.")
+            raise ValueError("Invalid or untrained model file.")
         if bundle["metadata"]["sklearn_version"] != sklearn.__version__:
-            raise ValueError("Model ile scikit-learn sürümü uyuşmuyor. requirements-lock.txt ile ortamı kurun veya yeniden eğitin.")
+            raise ValueError("The model requires a different scikit-learn version. Install the dependencies in requirements-lock.txt or retrain the model.")
         return cls(bundle["pipeline"], bundle["threshold"], bundle["metadata"])
 
     def predict(self, text: str) -> Prediction:

@@ -42,7 +42,7 @@ def test_encoder_freezing_updates_real_transformer_layers():
 
 def test_incomplete_bert_is_rejected(tmp_path):
     (tmp_path / "training.json").write_text(json.dumps({"schema_version": 1, "status": "training"}))
-    with pytest.raises(ValueError, match="tamamlanmamış"):
+    with pytest.raises(ValueError, match="incomplete"):
         BertModel.load(tmp_path)
 
 
@@ -63,7 +63,7 @@ def test_real_bert_cpu_and_chat(dataset_manifest):
     last = app.session_state["history"][-1]
     assert last["model_name"] == BertModel.name
     assert last["label"] == "Offensive"
-    assert last["display_text"] == "[Saldırgan mesaj maskelendi]"
+    assert last["display_text"] == "[Offensive message masked]"
 
 
 @pytest.mark.skipif(not QUANTIZED_BERT_MANIFEST.is_file(), reason="Requires the real INT8 artifact")
@@ -78,4 +78,4 @@ def test_int8_is_default_and_masks_offensive_message():
     assert clean["label"] == "Clean"
     assert offensive["model_name"] == QuantizedBertModel.name
     assert offensive["label"] == "Offensive"
-    assert offensive["display_text"] == "[Saldırgan mesaj maskelendi]"
+    assert offensive["display_text"] == "[Offensive message masked]"

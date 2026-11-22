@@ -56,9 +56,9 @@ def test_rule_switch_and_mixed_history():
     history = app.session_state["history"]
     assert history[0]["model_name"] == "TF-IDF + Logistic Regression"
     assert history[-1]["model_name"] == EditDistanceModel.name
-    assert history[-1]["display_text"] == "[Saldırgan mesaj maskelendi]"
+    assert history[-1]["display_text"] == "[Offensive message masked]"
     assert history[-1]["offensive_probability"] is None
-    assert any("Sözlük eşleşmesi" in item.value for item in app.caption)
+    assert any("Lexicon match" in item.value for item in app.caption)
     app.chat_input[0].set_value("!!!").run()
     assert len(app.session_state["history"]) == 2
     assert app.warning
@@ -83,4 +83,4 @@ def test_real_neural_and_ui(dataset_manifest):
     history = app.session_state["history"]
     assert history[-1]["model_name"] == NeuralModel.name
     assert history[-1]["label"] == "Offensive"
-    assert history[-1]["display_text"] == "[Saldırgan mesaj maskelendi]"
+    assert history[-1]["display_text"] == "[Offensive message masked]"
